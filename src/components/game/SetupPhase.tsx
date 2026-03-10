@@ -1,13 +1,27 @@
-import { useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Play, HelpCircle, Users } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Play,
+  HelpCircle,
+  Users,
+  Sparkles,
+  ListChecks,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Team, Question } from '@/types/game';
 
 const TEAM_COLORS = [
-  'bg-team-1', 'bg-team-2', 'bg-team-3', 'bg-team-4',
-  'bg-team-5', 'bg-team-6', 'bg-team-7', 'bg-team-8',
+  'bg-team-1',
+  'bg-team-2',
+  'bg-team-3',
+  'bg-team-4',
+  'bg-team-5',
+  'bg-team-6',
+  'bg-team-7',
+  'bg-team-8',
 ];
 
 interface SetupPhaseProps {
@@ -36,180 +50,272 @@ export default function SetupPhase({
   const [qCorrect, setQCorrect] = useState(0);
   const [qPoints, setQPoints] = useState(60);
 
+  const totalQuizPoints = useMemo(
+    () => questions.reduce((sum, question) => sum + (question.points || 0), 0),
+    [questions]
+  );
+  const canStart = teams.length >= 2 && questions.length > 0;
+
   const handleAddTeam = () => {
-    if (teamName.trim()) {
-      onAddTeam(teamName.trim());
-      setTeamName('');
-    }
+    if (!teamName.trim()) return;
+    onAddTeam(teamName.trim());
+    setTeamName('');
   };
 
   const handleAddQuestion = () => {
-    if (qText.trim() && qOptions.every((o) => o.trim())) {
-      onAddQuestion({
-        id: crypto.randomUUID(),
-        text: qText,
-        options: qOptions as [string, string, string, string],
-        correctIndex: qCorrect,
-        points: qPoints,
-      });
-      setQText('');
-      setQOptions(['', '', '', '']);
-      setQCorrect(0);
-      setShowAddQ(false);
-    }
+    if (!qText.trim() || !qOptions.every((option) => option.trim())) return;
+
+    onAddQuestion({
+      id: crypto.randomUUID(),
+      text: qText.trim(),
+      options: qOptions.map((option) => option.trim()) as [string, string, string, string],
+      correctIndex: qCorrect,
+      points: qPoints,
+    });
+
+    setQText('');
+    setQOptions(['', '', '', '']);
+    setQCorrect(0);
+    setQPoints(60);
+    setShowAddQ(false);
   };
 
   const labels = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="min-h-screen bg-game-gradient p-6 flex flex-col items-center">
-      <motion.h1
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="font-display text-5xl md:text-7xl text-primary text-glow-gold mb-8 text-center"
-      >
-        🎮 QUIZ SHOW 🎮
-      </motion.h1>
+    <div className="relative min-h-screen overflow-hidden bg-game-gradient">
+      <div className="pointer-events-none absolute -left-24 top-12 h-60 w-60 rounded-full bg-primary/15 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-12 h-72 w-72 rounded-full bg-accent/15 blur-3xl" />
 
-      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8">
-        {/* Teams */}
-        <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          className="bg-card rounded-xl p-6 card-glow"
+      <div className="relative mx-auto flex max-w-6xl flex-col gap-5 p-4 md:p-6">
+        <motion.header
+          initial={{ y: -16, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="rounded-2xl border border-primary/20 bg-card/90 p-5 md:p-7 card-glow"
         >
-          <h2 className="font-display text-2xl text-primary flex items-center gap-2 mb-4">
-            <Users className="w-6 h-6" /> ĐỘI CHƠI ({teams.length})
-          </h2>
-
-          <div className="flex gap-2 mb-4">
-            <Input
-              placeholder="Tên đội..."
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddTeam()}
-              className="bg-muted border-border"
-            />
-            <Button onClick={handleAddTeam} size="icon" className="bg-primary text-primary-foreground shrink-0">
-              <Plus className="w-4 h-4" />
-            </Button>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
+                <Sparkles className="h-4 w-4" /> Main Screen
+              </p>
+              <h1 className="mt-3 font-display text-4xl text-primary md:text-6xl">Quiz Bet Arena</h1>
+              <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
+                Tao danh sach doi choi va bo cau hoi. Khi du dieu kien, bat dau game de vao vong quiz.
+              </p>
+            </div>
+            <div className="rounded-xl border border-border/70 bg-muted/30 p-4 text-sm">
+              <p className="font-semibold">Dieu kien bat dau</p>
+              <p className="mt-1 text-muted-foreground">Can it nhat 2 doi va 1 cau hoi.</p>
+              <p className={`mt-2 font-bold ${canStart ? 'text-accent' : 'text-destructive'}`}>
+                {canStart ? 'San sang choi' : 'Chua du dieu kien'}
+              </p>
+            </div>
           </div>
 
-          <AnimatePresence>
-            {teams.map((team, i) => (
-              <motion.div
-                key={team.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                className="flex items-center gap-3 p-3 rounded-lg bg-muted mb-2"
-              >
-                <div className={`w-4 h-4 rounded-full ${TEAM_COLORS[i % 8]}`} />
-                <span className="font-bold flex-1">{team.name}</span>
-                <button onClick={() => onRemoveTeam(team.id)} className="text-destructive hover:text-destructive/80">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* Questions */}
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          className="bg-card rounded-xl p-6 card-glow"
-        >
-          <h2 className="font-display text-2xl text-primary flex items-center gap-2 mb-4">
-            <HelpCircle className="w-6 h-6" /> CÂU HỎI ({questions.length})
-          </h2>
-
-          <div className="space-y-2 max-h-60 overflow-y-auto mb-4">
-            {questions.map((q, i) => (
-              <div key={q.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted text-sm">
-                <span className="text-primary font-bold shrink-0">#{i + 1}</span>
-                <span className="flex-1 truncate">{q.text}</span>
-                <span className="text-primary font-bold shrink-0">{q.points}đ</span>
-                <button onClick={() => onRemoveQuestion(q.id)} className="text-destructive hover:text-destructive/80">
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-border bg-muted/30 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Teams</p>
+              <p className="font-display text-3xl text-primary">{teams.length}</p>
+            </div>
+            <div className="rounded-xl border border-border bg-muted/30 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Questions</p>
+              <p className="font-display text-3xl text-primary">{questions.length}</p>
+            </div>
+            <div className="rounded-xl border border-border bg-muted/30 p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Total Points</p>
+              <p className="font-display text-3xl text-primary">{totalQuizPoints}</p>
+            </div>
           </div>
+        </motion.header>
 
-          {!showAddQ ? (
-            <Button onClick={() => setShowAddQ(true)} variant="outline" className="w-full border-primary text-primary">
-              <Plus className="w-4 h-4 mr-2" /> Thêm câu hỏi
-            </Button>
-          ) : (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <motion.section
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="rounded-2xl border border-border/80 bg-card/90 p-5"
+          >
+            <h2 className="font-display text-2xl text-primary flex items-center gap-2">
+              <Users className="h-6 w-6" /> Quan ly doi choi
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">Them, xoa doi va sap xep doi truoc khi bat dau.</p>
+
+            <div className="mt-4 flex gap-2">
               <Input
-                placeholder="Nội dung câu hỏi..."
-                value={qText}
-                onChange={(e) => setQText(e.target.value)}
-                className="bg-muted border-border"
+                placeholder="Nhap ten doi"
+                value={teamName}
+                onChange={(event) => setTeamName(event.target.value)}
+                onKeyDown={(event) => event.key === 'Enter' && handleAddTeam()}
+                className="bg-muted/50"
               />
-              {qOptions.map((opt, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <button
-                    onClick={() => setQCorrect(i)}
-                    className={`w-8 h-8 rounded-full font-bold text-sm flex items-center justify-center shrink-0 transition-colors ${
-                      qCorrect === i
-                        ? 'bg-accent text-accent-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
+              <Button onClick={handleAddTeam} className="bg-primary text-primary-foreground" size="icon">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="mt-4 max-h-[360px] space-y-2 overflow-auto pr-1">
+              <AnimatePresence>
+                {teams.map((team, index) => (
+                  <motion.div
+                    key={team.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 p-3"
                   >
-                    {labels[i]}
-                  </button>
-                  <Input
-                    placeholder={`Đáp án ${labels[i]}...`}
-                    value={opt}
-                    onChange={(e) => {
-                      const newOpts = [...qOptions];
-                      newOpts[i] = e.target.value;
-                      setQOptions(newOpts);
-                    }}
-                    className="bg-muted border-border"
-                  />
+                    <div className={`h-4 w-4 rounded-full ${TEAM_COLORS[index % TEAM_COLORS.length]}`} />
+                    <div className="flex-1">
+                      <p className="font-semibold leading-none">{team.name}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">ID: {team.id.slice(0, 8)}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => onRemoveTeam(team.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {teams.length === 0 && (
+                <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
+                  Chua co doi nao. Them doi dau tien de khoi tao tran dau.
+                </div>
+              )}
+            </div>
+          </motion.section>
+
+          <motion.section
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="rounded-2xl border border-border/80 bg-card/90 p-5"
+          >
+            <h2 className="font-display text-2xl text-primary flex items-center gap-2">
+              <HelpCircle className="h-6 w-6" /> Quan ly cau hoi
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">Kiem tra nhanh danh sach cau hoi truoc khi chay quiz.</p>
+
+            <div className="mt-4 max-h-[220px] space-y-2 overflow-auto pr-1">
+              {questions.map((question, index) => (
+                <div key={question.id} className="rounded-xl border border-border bg-muted/30 p-3">
+                  <div className="flex items-start gap-2">
+                    <span className="rounded-md bg-primary/20 px-2 py-1 text-xs font-semibold text-primary">
+                      #{index + 1}
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold">{question.text}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{question.points} diem</p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7 text-destructive hover:text-destructive"
+                      onClick={() => onRemoveQuestion(question.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
-              <div className="flex gap-2 items-center">
-                <span className="text-sm text-muted-foreground">Điểm:</span>
-                <Input
-                  type="number"
-                  value={qPoints}
-                  onChange={(e) => setQPoints(Number(e.target.value))}
-                  className="bg-muted border-border w-24"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={handleAddQuestion} className="bg-accent text-accent-foreground flex-1">
-                  Thêm
-                </Button>
-                <Button onClick={() => setShowAddQ(false)} variant="outline" className="border-border">
-                  Huỷ
-                </Button>
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
-      </div>
 
-      {/* Start Button */}
-      <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-8"
-      >
-        <Button
-          onClick={onStart}
-          disabled={teams.length < 2 || questions.length === 0}
-          className="bg-primary text-primary-foreground font-display text-2xl px-12 py-6 rounded-xl hover:scale-105 transition-transform disabled:opacity-50"
+              {questions.length === 0 && (
+                <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
+                  Chua co cau hoi nao. Them cau hoi moi ben duoi.
+                </div>
+              )}
+            </div>
+
+            {!showAddQ ? (
+              <Button
+                onClick={() => setShowAddQ(true)}
+                variant="outline"
+                className="mt-4 w-full border-primary/60 text-primary"
+              >
+                <ListChecks className="mr-2 h-4 w-4" /> Them cau hoi moi
+              </Button>
+            ) : (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-3">
+                <Input
+                  placeholder="Noi dung cau hoi"
+                  value={qText}
+                  onChange={(event) => setQText(event.target.value)}
+                  className="bg-muted/40"
+                />
+
+                {qOptions.map((option, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setQCorrect(index)}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
+                        qCorrect === index
+                          ? 'bg-accent text-accent-foreground'
+                          : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {labels[index]}
+                    </button>
+                    <Input
+                      placeholder={`Dap an ${labels[index]}`}
+                      value={option}
+                      onChange={(event) => {
+                        const newOptions = [...qOptions];
+                        newOptions[index] = event.target.value;
+                        setQOptions(newOptions);
+                      }}
+                      className="bg-muted/40"
+                    />
+                  </div>
+                ))}
+
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Diem:</span>
+                  <Input
+                    type="number"
+                    min={10}
+                    step={10}
+                    value={qPoints}
+                    onChange={(event) => setQPoints(Math.max(10, Number(event.target.value) || 10))}
+                    className="w-28 bg-muted/40"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={handleAddQuestion} className="flex-1 bg-accent text-accent-foreground">
+                    Luu cau hoi
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setShowAddQ(false)}>
+                    Huy
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </motion.section>
+        </div>
+
+        <motion.footer
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="rounded-2xl border border-primary/20 bg-card/90 p-4 md:p-5"
         >
-          <Play className="w-8 h-8 mr-3" /> BẮT ĐẦU GAME!
-        </Button>
-      </motion.div>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Tip: o vong quiz ban co the trao diem cho nhieu doi neu cung tra loi dung.
+            </p>
+            <Button
+              onClick={onStart}
+              disabled={!canStart}
+              className="bg-primary text-primary-foreground font-display text-xl px-10 py-6 disabled:opacity-50"
+            >
+              <Play className="mr-3 h-6 w-6" /> Bat dau game
+            </Button>
+          </div>
+        </motion.footer>
+      </div>
     </div>
   );
 }

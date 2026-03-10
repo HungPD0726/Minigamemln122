@@ -2,6 +2,7 @@ export interface Team {
   id: string;
   name: string;
   score: number;
+  redeemedValue: number;
   colorIndex: number; // 1-8 maps to --team-1 through --team-8
 }
 

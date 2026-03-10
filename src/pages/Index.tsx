@@ -14,6 +14,7 @@ const Index = () => {
     awardPoints,
     nextQuestion,
     gamble,
+    redeemPoints,
     setPhase,
     addQuestion,
     removeQuestion,
@@ -54,6 +55,7 @@ const Index = () => {
         <GamblingPhase
           teams={state.teams}
           onGamble={gamble}
+          onRedeem={redeemPoints}
           onGoScoreboard={goToScoreboard}
           onBackToQuiz={() => setPhase('quiz')}
         />

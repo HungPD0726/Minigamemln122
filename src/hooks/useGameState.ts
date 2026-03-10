@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { GameState, Team, Question } from '@/types/game';
 
+const POINT_TO_VALUE_RATIO = 0.001; // 100 points = 0.1 value
+
 const SAMPLE_QUESTIONS: Question[] = [
   {
     id: '1',
@@ -60,6 +62,7 @@ export function useGameState() {
           id: crypto.randomUUID(),
           name,
           score: 0,
+          redeemedValue: 0,
           colorIndex: (prev.teams.length % 8) + 1,
         },
       ],
@@ -120,18 +123,33 @@ export function useGameState() {
     });
   }, []);
 
-  const gamble = useCallback((teamId: string, betAmount: number) => {
+  const gamble = useCallback((teamId: string, scoreDelta: number) => {
     setState((prev) => {
-      const win = Math.random() > 0.5;
       return {
         ...prev,
         teams: prev.teams.map((t) =>
           t.id === teamId
-            ? { ...t, score: win ? t.score + betAmount : Math.max(0, t.score - betAmount) }
+            ? { ...t, score: Math.max(0, t.score + Math.round(scoreDelta)) }
             : t
         ),
       };
     });
+  }, []);
+
+  const redeemPoints = useCallback((teamId: string, points: number) => {
+    if (points <= 0) return;
+
+    setState((prev) => ({
+      ...prev,
+      teams: prev.teams.map((t) => {
+        if (t.id !== teamId || t.score < points) return t;
+        return {
+          ...t,
+          score: t.score - points,
+          redeemedValue: Number((t.redeemedValue + points * POINT_TO_VALUE_RATIO).toFixed(3)),
+        };
+      }),
+    }));
   }, []);
 
   const updateTeamScore = useCallback((teamId: string, newScore: number) => {
@@ -160,7 +178,7 @@ export function useGameState() {
   const resetGame = useCallback(() => {
     setState((prev) => ({
       ...initialState,
-      teams: prev.teams.map((t) => ({ ...t, score: 0 })),
+      teams: prev.teams.map((t) => ({ ...t, score: 0, redeemedValue: 0 })),
       questions: prev.questions,
     }));
   }, []);
@@ -179,6 +197,7 @@ export function useGameState() {
     awardPoints,
     nextQuestion,
     gamble,
+    redeemPoints,
     updateTeamScore,
     addQuestion,
     removeQuestion,
