@@ -42,7 +42,7 @@ const SAMPLE_QUESTIONS: Question[] = [
 ];
 
 const initialState: GameState = {
-  phase: 'setup',
+  phase: 'intro',
   teams: [],
   questions: SAMPLE_QUESTIONS,
   currentQuestionIndex: 0,
@@ -178,6 +178,7 @@ export function useGameState() {
   const resetGame = useCallback(() => {
     setState((prev) => ({
       ...initialState,
+      phase: 'setup',
       teams: prev.teams.map((t) => ({ ...t, score: 0, redeemedValue: 0 })),
       questions: prev.questions,
     }));

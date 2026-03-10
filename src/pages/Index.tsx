@@ -3,6 +3,7 @@ import SetupPhase from '@/components/game/SetupPhase';
 import QuizPhase from '@/components/game/QuizPhase';
 import GamblingPhase from '@/components/game/GamblingPhase';
 import ScoreboardPhase from '@/components/game/ScoreboardPhase';
+import IntroPhase from '@/components/game/IntroPhase';
 
 const Index = () => {
   const {
@@ -23,6 +24,8 @@ const Index = () => {
   } = useGameState();
 
   switch (state.phase) {
+    case 'intro':
+      return <IntroPhase onStart={() => setPhase('setup')} />;
     case 'setup':
       return (
         <SetupPhase

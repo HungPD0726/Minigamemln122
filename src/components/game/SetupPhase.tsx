@@ -96,33 +96,33 @@ export default function SetupPhase({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-primary">
-                <Sparkles className="h-4 w-4" /> Main Screen
+                <Sparkles className="h-4 w-4" /> Màn Hình Chính
               </p>
               <h1 className="mt-3 font-display text-4xl text-primary md:text-6xl">Quiz Bet Arena</h1>
               <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
-                Tao danh sach doi choi va bo cau hoi. Khi du dieu kien, bat dau game de vao vong quiz.
+                Tạo danh sách đội chơi và bộ câu hỏi. Khi đủ điều kiện, bắt đầu game để vào vòng quiz.
               </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-muted/30 p-4 text-sm">
-              <p className="font-semibold">Dieu kien bat dau</p>
-              <p className="mt-1 text-muted-foreground">Can it nhat 2 doi va 1 cau hoi.</p>
+              <p className="font-semibold">Điều kiện bắt đầu</p>
+              <p className="mt-1 text-muted-foreground">Cần ít nhất 2 đội và 1 câu hỏi.</p>
               <p className={`mt-2 font-bold ${canStart ? 'text-accent' : 'text-destructive'}`}>
-                {canStart ? 'San sang choi' : 'Chua du dieu kien'}
+                {canStart ? 'Sẵn sàng chơi' : 'Chưa đủ điều kiện'}
               </p>
             </div>
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Teams</p>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Đội Chơi</p>
               <p className="font-display text-3xl text-primary">{teams.length}</p>
             </div>
             <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Questions</p>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Câu Hỏi</p>
               <p className="font-display text-3xl text-primary">{questions.length}</p>
             </div>
             <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Total Points</p>
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Tổng Điểm</p>
               <p className="font-display text-3xl text-primary">{totalQuizPoints}</p>
             </div>
           </div>
@@ -135,13 +135,13 @@ export default function SetupPhase({
             className="rounded-2xl border border-border/80 bg-card/90 p-5"
           >
             <h2 className="font-display text-2xl text-primary flex items-center gap-2">
-              <Users className="h-6 w-6" /> Quan ly doi choi
+              <Users className="h-6 w-6" /> Quản Lý Đội Chơi
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">Them, xoa doi va sap xep doi truoc khi bat dau.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Thêm, xóa đội và sắp xếp đội trước khi bắt đầu.</p>
 
             <div className="mt-4 flex gap-2">
               <Input
-                placeholder="Nhap ten doi"
+                placeholder="Nhập tên đội"
                 value={teamName}
                 onChange={(event) => setTeamName(event.target.value)}
                 onKeyDown={(event) => event.key === 'Enter' && handleAddTeam()}
@@ -182,7 +182,7 @@ export default function SetupPhase({
 
               {teams.length === 0 && (
                 <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
-                  Chua co doi nao. Them doi dau tien de khoi tao tran dau.
+                  Chưa có đội nào. Thêm đội đầu tiên để khởi tạo trận đấu.
                 </div>
               )}
             </div>
@@ -194,9 +194,9 @@ export default function SetupPhase({
             className="rounded-2xl border border-border/80 bg-card/90 p-5"
           >
             <h2 className="font-display text-2xl text-primary flex items-center gap-2">
-              <HelpCircle className="h-6 w-6" /> Quan ly cau hoi
+              <HelpCircle className="h-6 w-6" /> Quản Lý Câu Hỏi
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">Kiem tra nhanh danh sach cau hoi truoc khi chay quiz.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Kiểm tra nhanh danh sách câu hỏi trước khi chạy quiz.</p>
 
             <div className="mt-4 max-h-[220px] space-y-2 overflow-auto pr-1">
               {questions.map((question, index) => (
@@ -207,7 +207,7 @@ export default function SetupPhase({
                     </span>
                     <div className="flex-1">
                       <p className="text-sm font-semibold">{question.text}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{question.points} diem</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{question.points} điểm</p>
                     </div>
                     <Button
                       type="button"
@@ -224,7 +224,7 @@ export default function SetupPhase({
 
               {questions.length === 0 && (
                 <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
-                  Chua co cau hoi nao. Them cau hoi moi ben duoi.
+                  Chưa có câu hỏi nào. Thêm câu hỏi mới bên dưới.
                 </div>
               )}
             </div>
@@ -235,12 +235,12 @@ export default function SetupPhase({
                 variant="outline"
                 className="mt-4 w-full border-primary/60 text-primary"
               >
-                <ListChecks className="mr-2 h-4 w-4" /> Them cau hoi moi
+                <ListChecks className="mr-2 h-4 w-4" /> Thêm câu hỏi mới
               </Button>
             ) : (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-3">
                 <Input
-                  placeholder="Noi dung cau hoi"
+                  placeholder="Nội dung câu hỏi"
                   value={qText}
                   onChange={(event) => setQText(event.target.value)}
                   className="bg-muted/40"
@@ -260,7 +260,7 @@ export default function SetupPhase({
                       {labels[index]}
                     </button>
                     <Input
-                      placeholder={`Dap an ${labels[index]}`}
+                      placeholder={`Đáp án ${labels[index]}`}
                       value={option}
                       onChange={(event) => {
                         const newOptions = [...qOptions];
@@ -273,7 +273,7 @@ export default function SetupPhase({
                 ))}
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Diem:</span>
+                  <span className="text-sm text-muted-foreground">Điểm:</span>
                   <Input
                     type="number"
                     min={10}
@@ -286,10 +286,10 @@ export default function SetupPhase({
 
                 <div className="flex gap-2">
                   <Button onClick={handleAddQuestion} className="flex-1 bg-accent text-accent-foreground">
-                    Luu cau hoi
+                    Lưu câu hỏi
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setShowAddQ(false)}>
-                    Huy
+                    Hủy
                   </Button>
                 </div>
               </motion.div>
@@ -304,14 +304,14 @@ export default function SetupPhase({
         >
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-muted-foreground">
-              Tip: o vong quiz ban co the trao diem cho nhieu doi neu cung tra loi dung.
+              Mẹo: ở vòng quiz bạn có thể trao điểm cho nhiều đội nếu cùng trả lời đúng.
             </p>
             <Button
               onClick={onStart}
               disabled={!canStart}
               className="bg-primary text-primary-foreground font-display text-xl px-10 py-6 disabled:opacity-50"
             >
-              <Play className="mr-3 h-6 w-6" /> Bat dau game
+              <Play className="mr-3 h-6 w-6" /> Bắt đầu game
             </Button>
           </div>
         </motion.footer>

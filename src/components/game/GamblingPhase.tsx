@@ -165,12 +165,12 @@ export default function GamblingPhase({
     if (!selectedTeamData) return;
 
     if (selectedTeamData.score < 100) {
-      setRedeemMessage('Can it nhat 100 diem de doi.');
+      setRedeemMessage('Cần ít nhất 100 điểm để đổi.');
       return;
     }
 
     onRedeem(selectedTeamData.id, 100);
-    setRedeemMessage(`${selectedTeamData.name} da doi 100 diem -> 0.1.`);
+    setRedeemMessage(`${selectedTeamData.name} đã đổi 100 điểm -> 0.1.`);
     setRoundResult(null);
     setBets(createEmptyBets());
   };
@@ -185,7 +185,7 @@ export default function GamblingPhase({
         >
           <h1 className="font-display text-center text-4xl text-primary md:text-6xl">DICE BET ARENA</h1>
           <p className="mt-2 text-center text-sm text-muted-foreground md:text-base">
-            Dat diem vao nhieu o, quay 3 xuc xac va tinh lai lo theo ket qua tung mat.
+            Đặt điểm vào nhiều ô, quay 3 xúc xắc và tính lãi lỗ theo kết quả từng mặt.
           </p>
         </motion.div>
 
@@ -195,7 +195,7 @@ export default function GamblingPhase({
             animate={{ x: 0, opacity: 1 }}
             className="rounded-2xl border border-border/80 bg-card/90 p-5"
           >
-            <h2 className="font-display text-2xl text-primary">Chon doi va dat cuoc</h2>
+            <h2 className="font-display text-2xl text-primary">Chọn đội và đặt cược</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {sortedTeams.map((team) => (
                 <Button
@@ -207,14 +207,14 @@ export default function GamblingPhase({
                       : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
-                  {team.name}: {team.score} diem
+                  {team.name}: {team.score} điểm
                 </Button>
               ))}
             </div>
 
             {!selectedTeamData && (
               <div className="mt-5 rounded-xl border border-dashed border-border/70 bg-muted/30 p-5 text-center text-muted-foreground">
-                Chon mot doi de bat dau dat cuoc.
+                Chọn một đội để bắt đầu đặt cược.
               </div>
             )}
 
@@ -232,9 +232,9 @@ export default function GamblingPhase({
                         <div className="mb-2 flex items-center justify-between">
                           <div className="flex items-center gap-2 font-bold">
                             <DiceIcon className="h-5 w-5 text-primary" />
-                            <span>O {face}</span>
+                            <span>Ô {face}</span>
                           </div>
-                          <span className="text-xs text-muted-foreground">x1 den x3 neu hit</span>
+                          <span className="text-xs text-muted-foreground">x1 đến x3 nếu trúng</span>
                         </div>
                         <Input
                           type="number"
@@ -265,13 +265,13 @@ export default function GamblingPhase({
                 <div className="rounded-xl border border-primary/20 bg-primary/10 p-4">
                   <div className="grid gap-2 text-sm md:grid-cols-3">
                     <p>
-                      Tong dat: <span className="font-bold text-primary">{totalBet}</span>
+                      Tổng đặt: <span className="font-bold text-primary">{totalBet}</span>
                     </p>
                     <p>
-                      Con lai: <span className="font-bold text-accent">{remainingPoints}</span>
+                      Còn lại: <span className="font-bold text-accent">{remainingPoints}</span>
                     </p>
                     <p>
-                      Lai toi da: <span className="font-bold text-secondary">{totalBet * 3}</span>
+                      Lãi tối đa: <span className="font-bold text-secondary">{totalBet * 3}</span>
                     </p>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -290,7 +290,7 @@ export default function GamblingPhase({
                         </motion.span>
                       ) : (
                         <>
-                          <Dice1 className="mr-2 h-5 w-5" /> Quay xuc xac
+                          <Dice1 className="mr-2 h-5 w-5" /> Quay xúc xắc
                         </>
                       )}
                     </Button>
@@ -300,7 +300,7 @@ export default function GamblingPhase({
                       className="border-border"
                       onClick={() => setBets(createEmptyBets())}
                     >
-                      Xoa cuoc
+                      Xóa cược
                     </Button>
                   </div>
                 </div>
@@ -308,8 +308,8 @@ export default function GamblingPhase({
                 <div className="rounded-xl border border-accent/20 bg-accent/10 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-semibold">Doi diem</p>
-                      <p className="text-sm text-muted-foreground">100 diem = 0.1</p>
+                      <p className="font-semibold">Đổi điểm</p>
+                      <p className="text-sm text-muted-foreground">100 điểm = 0.1</p>
                     </div>
                     <Button
                       type="button"
@@ -318,11 +318,11 @@ export default function GamblingPhase({
                       className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
                     >
                       <HandCoins className="mr-2 h-4 w-4" />
-                      Doi 100 diem
+                      Đổi 100 điểm
                     </Button>
                   </div>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Da doi: <span className="font-bold text-accent">{selectedTeamData.redeemedValue.toFixed(3)}</span>
+                    Đã đổi: <span className="font-bold text-accent">{selectedTeamData.redeemedValue.toFixed(3)}</span>
                   </p>
                   {redeemMessage && <p className="mt-1 text-sm text-primary">{redeemMessage}</p>}
                 </div>
@@ -335,7 +335,7 @@ export default function GamblingPhase({
             animate={{ x: 0, opacity: 1 }}
             className="rounded-2xl border border-border/80 bg-card/90 p-5"
           >
-            <h2 className="font-display text-2xl text-primary">Ket qua va bang tam</h2>
+            <h2 className="font-display text-2xl text-primary">Kết quả và bảng tạm</h2>
 
             <AnimatePresence mode="wait">
               {roundResult ? (
@@ -346,7 +346,7 @@ export default function GamblingPhase({
                   exit={{ opacity: 0, y: -12 }}
                   className="mt-4 rounded-xl border border-primary/30 bg-primary/10 p-4"
                 >
-                  <p className="text-sm text-muted-foreground">3 xuc xac ra:</p>
+                  <p className="text-sm text-muted-foreground">3 xúc xắc ra:</p>
                   <div className="mt-2 flex items-center gap-2">
                     {roundResult.dice.map((face, index) => {
                       const DiceIcon = DICE_ICONS[face];
@@ -361,11 +361,11 @@ export default function GamblingPhase({
                     })}
                   </div>
                   <div className="mt-3 space-y-1 text-sm">
-                    <p>Tong dat: {roundResult.totalBet}</p>
-                    <p className="text-accent">Thang: +{roundResult.won}</p>
+                    <p>Tổng đặt: {roundResult.totalBet}</p>
+                    <p className="text-accent">Thắng: +{roundResult.won}</p>
                     <p className="text-destructive">Thua: -{roundResult.lost}</p>
                     <p className="font-bold">
-                      Chenh lech:{' '}
+                      Chênh lệch:{' '}
                       <span className={roundResult.delta >= 0 ? 'text-accent' : 'text-destructive'}>
                         {roundResult.delta >= 0 ? '+' : ''}
                         {roundResult.delta}
@@ -381,7 +381,7 @@ export default function GamblingPhase({
                   exit={{ opacity: 0 }}
                   className="mt-4 rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground"
                 >
-                  Chua co ket qua vong cuoc. Hay dat diem va quay xuc xac.
+                  Chưa có kết quả vòng cược. Hãy đặt điểm và quay xúc xắc.
                 </motion.div>
               )}
             </AnimatePresence>
@@ -398,9 +398,9 @@ export default function GamblingPhase({
                     <span className="font-semibold">
                       #{index + 1} {team.name}
                     </span>
-                    <span className="font-bold text-primary">{team.score} diem</span>
+                    <span className="font-bold text-primary">{team.score} điểm</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Da doi: {team.redeemedValue.toFixed(3)}</p>
+                  <p className="text-xs text-muted-foreground">Đã đổi: {team.redeemedValue.toFixed(3)}</p>
                 </div>
               ))}
             </div>
@@ -419,7 +419,7 @@ export default function GamblingPhase({
             onClick={onGoScoreboard}
             className="bg-primary text-primary-foreground font-display text-lg px-6 py-4"
           >
-            <Trophy className="w-5 h-5 mr-2" /> Bang diem
+            <Trophy className="w-5 h-5 mr-2" /> Bảng điểm
           </Button>
         </div>
       </div>

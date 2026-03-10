@@ -14,7 +14,7 @@ const TEAM_COLORS = [
   'from-team-8/80 to-team-8/35',
 ];
 
-const MEDALS = ['1st', '2nd', '3rd'];
+const MEDALS = ['Hạng 1', 'Hạng 2', 'Hạng 3'];
 
 interface ScoreboardPhaseProps {
   teams: Team[];
@@ -40,7 +40,7 @@ export default function ScoreboardPhase({
         className="text-center mb-7"
       >
         <Trophy className="mx-auto mb-2 h-14 w-14 text-primary" />
-        <h1 className="font-display text-4xl text-primary md:text-6xl">Scoreboard</h1>
+        <h1 className="font-display text-4xl text-primary md:text-6xl">Bảng Xếp Hạng</h1>
       </motion.div>
 
       <div className="w-full max-w-3xl space-y-3">
@@ -63,7 +63,7 @@ export default function ScoreboardPhase({
                 </span>
                 <div className="flex-1">
                   <p className="font-display text-2xl leading-none">{team.name}</p>
-                  <p className="mt-1 text-sm text-foreground/80">Da doi: {team.redeemedValue.toFixed(3)}</p>
+                  <p className="mt-1 text-sm text-foreground/80">Đã đổi: {team.redeemedValue.toFixed(3)}</p>
                 </div>
                 <p className="font-display text-3xl text-primary">{team.score}</p>
               </div>
@@ -85,7 +85,7 @@ export default function ScoreboardPhase({
           transition={{ delay: 0.7 }}
           className="mt-5 text-center text-muted-foreground"
         >
-          Doi dang dan dau: <span className="font-bold text-primary">{sorted[0].name}</span>
+          Đội đang dẫn đầu: <span className="font-bold text-primary">{sorted[0].name}</span>
         </motion.p>
       )}
 
@@ -101,14 +101,14 @@ export default function ScoreboardPhase({
           onClick={onGoGambling}
           className="bg-secondary text-secondary-foreground font-display text-lg px-6 py-4"
         >
-          <Dice1 className="mr-2 h-5 w-5" /> Bet Mode
+          <Dice1 className="mr-2 h-5 w-5" /> Chế độ cược
         </Button>
         <Button
           onClick={onReset}
           variant="outline"
           className="border-destructive text-destructive font-display text-lg px-6 py-4"
         >
-          <RotateCcw className="mr-2 h-5 w-5" /> Reset
+          <RotateCcw className="mr-2 h-5 w-5" /> Chơi lại
         </Button>
       </div>
     </div>
