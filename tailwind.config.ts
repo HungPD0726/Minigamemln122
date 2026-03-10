@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        display: ['Bangers', 'cursive'],
+        body: ['Nunito', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -56,6 +60,16 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        team: {
+          1: "hsl(var(--team-1))",
+          2: "hsl(var(--team-2))",
+          3: "hsl(var(--team-3))",
+          4: "hsl(var(--team-4))",
+          5: "hsl(var(--team-5))",
+          6: "hsl(var(--team-6))",
+          7: "hsl(var(--team-7))",
+          8: "hsl(var(--team-8))",
         },
       },
       borderRadius: {
