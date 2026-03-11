@@ -1,50 +1,13 @@
 import { useState, useCallback } from 'react';
 import { GameState, Team, Question } from '@/types/game';
+import { DEFAULT_QUESTION_POINTS, INITIAL_QUESTIONS } from '@/lib/questionBank';
 
 const POINT_TO_VALUE_RATIO = 0.001; // 100 points = 0.1 value
-
-const SAMPLE_QUESTIONS: Question[] = [
-  {
-    id: '1',
-    text: 'Thủ đô của Việt Nam là gì?',
-    options: ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Huế'],
-    correctIndex: 1,
-    points: 60,
-  },
-  {
-    id: '2',
-    text: 'Sông nào dài nhất Việt Nam?',
-    options: ['Sông Hồng', 'Sông Mê Kông', 'Sông Đồng Nai', 'Sông Đà'],
-    correctIndex: 1,
-    points: 60,
-  },
-  {
-    id: '3',
-    text: 'Năm nào Việt Nam giành độc lập?',
-    options: ['1940', '1945', '1954', '1975'],
-    correctIndex: 1,
-    points: 80,
-  },
-  {
-    id: '4',
-    text: 'Đỉnh núi cao nhất Việt Nam?',
-    options: ['Phu Si Lung', 'Fansipan', 'Ngọc Linh', 'Bạch Mã'],
-    correctIndex: 1,
-    points: 60,
-  },
-  {
-    id: '5',
-    text: 'Việt Nam có bao nhiêu tỉnh thành?',
-    options: ['61', '63', '64', '65'],
-    correctIndex: 1,
-    points: 80,
-  },
-];
 
 const initialState: GameState = {
   phase: 'intro',
   teams: [],
-  questions: SAMPLE_QUESTIONS,
+  questions: INITIAL_QUESTIONS,
   currentQuestionIndex: 0,
   revealedAnswer: false,
   awardedTeams: [],
@@ -164,7 +127,7 @@ export function useGameState() {
   const addQuestion = useCallback((question: Question) => {
     setState((prev) => ({
       ...prev,
-      questions: [...prev.questions, question],
+      questions: [...prev.questions, { ...question, points: DEFAULT_QUESTION_POINTS }],
     }));
   }, []);
 

@@ -15,7 +15,7 @@ export interface Question {
 }
 
 export interface GameState {
-  phase: 'intro' | 'setup' | 'quiz' | 'gambling' | 'scoreboard';
+  phase: 'intro' | 'setup' | 'question-bank' | 'quiz' | 'gambling' | 'scoreboard';
   teams: Team[];
   questions: Question[];
   currentQuestionIndex: number;

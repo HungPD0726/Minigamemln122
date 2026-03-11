@@ -1,14 +1,6 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Plus,
-  Trash2,
-  Play,
-  HelpCircle,
-  Users,
-  Sparkles,
-  ListChecks,
-} from 'lucide-react';
+import { Plus, Trash2, Play, HelpCircle, Users, Sparkles, ListChecks } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Team, Question } from '@/types/game';
@@ -29,8 +21,7 @@ interface SetupPhaseProps {
   questions: Question[];
   onAddTeam: (name: string) => void;
   onRemoveTeam: (id: string) => void;
-  onAddQuestion: (q: Question) => void;
-  onRemoveQuestion: (id: string) => void;
+  onOpenQuestionBank: () => void;
   onStart: () => void;
 }
 
@@ -39,16 +30,10 @@ export default function SetupPhase({
   questions,
   onAddTeam,
   onRemoveTeam,
-  onAddQuestion,
-  onRemoveQuestion,
+  onOpenQuestionBank,
   onStart,
 }: SetupPhaseProps) {
   const [teamName, setTeamName] = useState('');
-  const [showAddQ, setShowAddQ] = useState(false);
-  const [qText, setQText] = useState('');
-  const [qOptions, setQOptions] = useState(['', '', '', '']);
-  const [qCorrect, setQCorrect] = useState(0);
-  const [qPoints, setQPoints] = useState(60);
 
   const totalQuizPoints = useMemo(
     () => questions.reduce((sum, question) => sum + (question.points || 0), 0),
@@ -61,26 +46,6 @@ export default function SetupPhase({
     onAddTeam(teamName.trim());
     setTeamName('');
   };
-
-  const handleAddQuestion = () => {
-    if (!qText.trim() || !qOptions.every((option) => option.trim())) return;
-
-    onAddQuestion({
-      id: crypto.randomUUID(),
-      text: qText.trim(),
-      options: qOptions.map((option) => option.trim()) as [string, string, string, string],
-      correctIndex: qCorrect,
-      points: qPoints,
-    });
-
-    setQText('');
-    setQOptions(['', '', '', '']);
-    setQCorrect(0);
-    setQPoints(60);
-    setShowAddQ(false);
-  };
-
-  const labels = ['A', 'B', 'C', 'D'];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-game-gradient">
@@ -100,7 +65,7 @@ export default function SetupPhase({
               </p>
               <h1 className="mt-3 font-display text-4xl text-primary md:text-6xl">Quiz Bet Arena</h1>
               <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
-                Tạo danh sách đội chơi và bộ câu hỏi. Khi đủ điều kiện, bắt đầu game để vào vòng quiz.
+                Tạo danh sách đội chơi và chuẩn bị bộ câu hỏi ở trang riêng. Khi đủ điều kiện, bắt đầu game để vào vòng quiz.
               </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-muted/30 p-4 text-sm">
@@ -194,106 +159,28 @@ export default function SetupPhase({
             className="rounded-2xl border border-border/80 bg-card/90 p-5"
           >
             <h2 className="font-display text-2xl text-primary flex items-center gap-2">
-              <HelpCircle className="h-6 w-6" /> Quản Lý Câu Hỏi
+              <HelpCircle className="h-6 w-6" /> Bộ Câu Hỏi Riêng
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">Kiểm tra nhanh danh sách câu hỏi trước khi chạy quiz.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Danh sách nội dung câu hỏi được tách sang trang riêng để không hiển thị trước cho khán giả.
+            </p>
 
-            <div className="mt-4 max-h-[220px] space-y-2 overflow-auto pr-1">
-              {questions.map((question, index) => (
-                <div key={question.id} className="rounded-xl border border-border bg-muted/30 p-3">
-                  <div className="flex items-start gap-2">
-                    <span className="rounded-md bg-primary/20 px-2 py-1 text-xs font-semibold text-primary">
-                      #{index + 1}
-                    </span>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold">{question.text}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{question.points} điểm</p>
-                    </div>
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 text-destructive hover:text-destructive"
-                      onClick={() => onRemoveQuestion(question.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-
-              {questions.length === 0 && (
-                <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
-                  Chưa có câu hỏi nào. Thêm câu hỏi mới bên dưới.
-                </div>
-              )}
+            <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4">
+              <p className="text-sm">
+                Hiện có <span className="font-bold text-primary">{questions.length}</span> câu hỏi.
+              </p>
+              <p className="mt-1 text-sm">
+                Mỗi câu mặc định <span className="font-bold text-primary">60 điểm</span>.
+              </p>
             </div>
 
-            {!showAddQ ? (
-              <Button
-                onClick={() => setShowAddQ(true)}
-                variant="outline"
-                className="mt-4 w-full border-primary/60 text-primary"
-              >
-                <ListChecks className="mr-2 h-4 w-4" /> Thêm câu hỏi mới
-              </Button>
-            ) : (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-3">
-                <Input
-                  placeholder="Nội dung câu hỏi"
-                  value={qText}
-                  onChange={(event) => setQText(event.target.value)}
-                  className="bg-muted/40"
-                />
-
-                {qOptions.map((option, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setQCorrect(index)}
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
-                        qCorrect === index
-                          ? 'bg-accent text-accent-foreground'
-                          : 'bg-muted text-muted-foreground'
-                      }`}
-                    >
-                      {labels[index]}
-                    </button>
-                    <Input
-                      placeholder={`Đáp án ${labels[index]}`}
-                      value={option}
-                      onChange={(event) => {
-                        const newOptions = [...qOptions];
-                        newOptions[index] = event.target.value;
-                        setQOptions(newOptions);
-                      }}
-                      className="bg-muted/40"
-                    />
-                  </div>
-                ))}
-
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Điểm:</span>
-                  <Input
-                    type="number"
-                    min={10}
-                    step={10}
-                    value={qPoints}
-                    onChange={(event) => setQPoints(Math.max(10, Number(event.target.value) || 10))}
-                    className="w-28 bg-muted/40"
-                  />
-                </div>
-
-                <div className="flex gap-2">
-                  <Button onClick={handleAddQuestion} className="flex-1 bg-accent text-accent-foreground">
-                    Lưu câu hỏi
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => setShowAddQ(false)}>
-                    Hủy
-                  </Button>
-                </div>
-              </motion.div>
-            )}
+            <Button
+              onClick={onOpenQuestionBank}
+              variant="outline"
+              className="mt-4 w-full border-primary/60 text-primary"
+            >
+              <ListChecks className="mr-2 h-4 w-4" /> Mở trang quản lý câu hỏi
+            </Button>
           </motion.section>
         </div>
 

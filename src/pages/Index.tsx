@@ -1,5 +1,6 @@
 import { useGameState } from '@/hooks/useGameState';
 import SetupPhase from '@/components/game/SetupPhase';
+import QuestionBankPhase from '@/components/game/QuestionBankPhase';
 import QuizPhase from '@/components/game/QuizPhase';
 import GamblingPhase from '@/components/game/GamblingPhase';
 import ScoreboardPhase from '@/components/game/ScoreboardPhase';
@@ -33,9 +34,17 @@ const Index = () => {
           questions={state.questions}
           onAddTeam={addTeam}
           onRemoveTeam={removeTeam}
+          onOpenQuestionBank={() => setPhase('question-bank')}
+          onStart={startQuiz}
+        />
+      );
+    case 'question-bank':
+      return (
+        <QuestionBankPhase
+          questions={state.questions}
           onAddQuestion={addQuestion}
           onRemoveQuestion={removeQuestion}
-          onStart={startQuiz}
+          onBack={() => setPhase('setup')}
         />
       );
     case 'quiz':
