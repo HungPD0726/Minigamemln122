@@ -1,20 +1,98 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GameState, Team, Question } from '@/types/game';
 import { DEFAULT_QUESTION_POINTS, INITIAL_QUESTIONS } from '@/lib/questionBank';
+import {
+  PRESENTER_STATE_STORAGE_KEY,
+  broadcastPublicState,
+  normalizeStoredQuestions,
+  normalizeStoredTeams,
+  toPublicGameState,
+  writePublicStateToStorage,
+} from '@/lib/publicState';
 
 const POINT_TO_VALUE_RATIO = 0.001; // 100 points = 0.1 value
 
-const initialState: GameState = {
+const GAME_PHASES: GameState['phase'][] = [
+  'intro',
+  'setup',
+  'question-bank',
+  'quiz',
+  'gambling',
+  'scoreboard',
+];
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const isGamePhase = (value: unknown): value is GameState['phase'] =>
+  typeof value === 'string' && GAME_PHASES.includes(value as GameState['phase']);
+
+const createDefaultState = (): GameState => ({
   phase: 'intro',
   teams: [],
   questions: INITIAL_QUESTIONS,
   currentQuestionIndex: 0,
   revealedAnswer: false,
   awardedTeams: [],
+});
+
+const readPresenterState = (): GameState | null => {
+  if (typeof window === 'undefined') return null;
+
+  const raw = window.localStorage.getItem(PRESENTER_STATE_STORAGE_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!isObject(parsed)) return null;
+
+    const teams = normalizeStoredTeams(parsed.teams);
+    const questions = normalizeStoredQuestions(parsed.questions).map((question) => ({
+      ...question,
+      points: DEFAULT_QUESTION_POINTS,
+    }));
+    const safeQuestions = questions.length > 0 ? questions : INITIAL_QUESTIONS;
+    const maxQuestionIndex = Math.max(0, safeQuestions.length - 1);
+    const currentQuestionIndex = clamp(
+      Math.round(Number(parsed.currentQuestionIndex) || 0),
+      0,
+      maxQuestionIndex
+    );
+    const validTeamIds = new Set(teams.map((team) => team.id));
+    const awardedTeams = Array.isArray(parsed.awardedTeams)
+      ? parsed.awardedTeams
+          .filter((id): id is string => typeof id === 'string' && validTeamIds.has(id))
+          .slice(0, 20)
+      : [];
+
+    return {
+      phase: isGamePhase(parsed.phase) ? parsed.phase : 'intro',
+      teams,
+      questions: safeQuestions,
+      currentQuestionIndex,
+      revealedAnswer: Boolean(parsed.revealedAnswer),
+      awardedTeams,
+    };
+  } catch {
+    return null;
+  }
 };
 
+const createInitialState = (): GameState => readPresenterState() ?? createDefaultState();
+
 export function useGameState() {
-  const [state, setState] = useState<GameState>(initialState);
+  const [state, setState] = useState<GameState>(createInitialState);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    window.localStorage.setItem(PRESENTER_STATE_STORAGE_KEY, JSON.stringify(state));
+    const publicState = toPublicGameState(state);
+    writePublicStateToStorage(publicState);
+    broadcastPublicState(publicState);
+  }, [state]);
 
   const addTeam = useCallback((name: string) => {
     setState((prev) => ({
@@ -132,19 +210,26 @@ export function useGameState() {
   }, []);
 
   const removeQuestion = useCallback((id: string) => {
-    setState((prev) => ({
-      ...prev,
-      questions: prev.questions.filter((q) => q.id !== id),
-    }));
+    setState((prev) => {
+      const nextQuestions = prev.questions.filter((q) => q.id !== id);
+      return {
+        ...prev,
+        questions: nextQuestions,
+        currentQuestionIndex: clamp(prev.currentQuestionIndex, 0, Math.max(0, nextQuestions.length - 1)),
+      };
+    });
   }, []);
 
   const resetGame = useCallback(() => {
-    setState((prev) => ({
-      ...initialState,
-      phase: 'setup',
-      teams: prev.teams.map((t) => ({ ...t, score: 0, redeemedValue: 0 })),
-      questions: prev.questions,
-    }));
+    setState((prev) => {
+      const defaultState = createDefaultState();
+      return {
+        ...defaultState,
+        phase: 'setup',
+        teams: prev.teams.map((t) => ({ ...t, score: 0, redeemedValue: 0 })),
+        questions: prev.questions.length > 0 ? prev.questions : defaultState.questions,
+      };
+    });
   }, []);
 
   const goToScoreboard = useCallback(() => {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, Play, HelpCircle, Users, Sparkles, ListChecks } from 'lucide-react';
+import { Plus, Trash2, Play, HelpCircle, Users, Sparkles, ListChecks, Presentation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Team, Question } from '@/types/game';
@@ -180,6 +180,11 @@ export default function SetupPhase({
               className="mt-4 w-full border-primary/60 text-primary"
             >
               <ListChecks className="mr-2 h-4 w-4" /> Mở trang quản lý câu hỏi
+            </Button>
+            <Button asChild variant="outline" className="mt-2 w-full border-border/80">
+              <a href={`${import.meta.env.BASE_URL}audience`} target="_blank" rel="noreferrer">
+                <Presentation className="mr-2 h-4 w-4" /> Mở màn hình khán giả
+              </a>
             </Button>
           </motion.section>
         </div>
