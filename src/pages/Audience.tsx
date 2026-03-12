@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CircleHelp, Dice3, Trophy, Wifi, WifiOff } from 'lucide-react';
+import { CircleHelp, Dice3, RefreshCw, Trophy, Wifi, WifiOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { PublicGameState, PUBLIC_STATE_CHANNEL_NAME, PUBLIC_STATE_STORAGE_KEY, normalizePublicGameState, readPublicStateFromStorage } from '@/lib/publicState';
 
 const OPTION_COLORS = [
@@ -28,6 +29,11 @@ function formatClock(timestamp: number) {
 export default function Audience() {
   const [state, setState] = useState<PublicGameState | null>(() => readPublicStateFromStorage());
   const [connected, setConnected] = useState(() => Boolean(readPublicStateFromStorage()));
+  const reloadAllData = useCallback(() => {
+    const next = readPublicStateFromStorage();
+    setState(next);
+    setConnected(Boolean(next));
+  }, []);
 
   useEffect(() => {
     const cached = readPublicStateFromStorage();
@@ -79,23 +85,29 @@ export default function Audience() {
       <div className="relative min-h-screen overflow-hidden bg-game-gradient p-4 md:p-6">
         <div className="pointer-events-none absolute -left-20 top-16 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute -right-16 bottom-10 h-72 w-72 rounded-full bg-secondary/15 blur-3xl" />
-        <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] max-w-6xl items-center justify-center">
-          <AudienceWaiting
-            icon={WifiOff}
-            title="Màn Hình Khán Giả"
-            description="Chưa nhận dữ liệu từ Presenter. Hãy mở route /presenter và bắt đầu game."
-          />
+        <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] max-w-6xl flex-col items-center justify-center gap-4">
+          <AudienceWaiting icon={WifiOff} title="Màn Hình Khán Giả" description="Chưa nhận dữ liệu từ Presenter. Hãy mở route /presenter và bắt đầu game." />
+          <Button onClick={reloadAllData} variant="outline" className="border-primary/60 bg-card/80 text-primary">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Load lại tất cả dữ liệu
+          </Button>
         </div>
       </div>
     );
   }
 
   const headerStatus = (
-    <div className="absolute right-4 top-4 rounded-full border border-border/60 bg-card/80 px-3 py-1 text-xs">
-      <span className="inline-flex items-center gap-1 text-muted-foreground">
-        {connected ? <Wifi className="h-3.5 w-3.5 text-accent" /> : <WifiOff className="h-3.5 w-3.5 text-destructive" />}
-        Cập nhật: {formatClock(state.updatedAt)}
-      </span>
+    <div className="absolute right-4 top-4 flex items-center gap-2">
+      <div className="rounded-full border border-border/60 bg-card/80 px-3 py-1 text-xs">
+        <span className="inline-flex items-center gap-1 text-muted-foreground">
+          {connected ? <Wifi className="h-3.5 w-3.5 text-accent" /> : <WifiOff className="h-3.5 w-3.5 text-destructive" />}
+          Cập nhật: {formatClock(state.updatedAt)}
+        </span>
+      </div>
+      <Button onClick={reloadAllData} size="sm" variant="outline" className="border-primary/60 bg-card/80 text-primary">
+        <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+        Load lại dữ liệu
+      </Button>
     </div>
   );
 
