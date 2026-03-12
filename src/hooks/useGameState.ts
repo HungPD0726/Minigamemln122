@@ -10,7 +10,7 @@ import {
   writePublicStateToStorage,
 } from '@/lib/publicState';
 
-const POINT_TO_VALUE_RATIO = 0.001; // 100 points = 0.1 value
+const POINT_TO_VALUE_RATIO = 0.0005; // 100 points = 0.05 value
 
 const GAME_PHASES: GameState['phase'][] = [
   'intro',

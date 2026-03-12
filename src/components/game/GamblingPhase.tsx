@@ -170,7 +170,7 @@ export default function GamblingPhase({
     }
 
     onRedeem(selectedTeamData.id, 100);
-    setRedeemMessage(`${selectedTeamData.name} đã đổi 100 điểm -> 0.1.`);
+    setRedeemMessage(`${selectedTeamData.name} đã đổi 100 điểm -> 0.05.`);
     setRoundResult(null);
     setBets(createEmptyBets());
   };
@@ -309,7 +309,7 @@ export default function GamblingPhase({
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold">Đổi điểm</p>
-                      <p className="text-sm text-muted-foreground">100 điểm = 0.1</p>
+                      <p className="text-sm text-muted-foreground">100 điểm = 0.05</p>
                     </div>
                     <Button
                       type="button"
